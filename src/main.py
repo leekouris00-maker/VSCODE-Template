@@ -28,8 +28,9 @@ def blink_fast(led):
     blink(led, 0.2, 0.2)
 
 def heartbeat(led):
+    print("[PATTERN] Heartbeat")
     blink(led, 0.2, 0.2)
-    sleep(0.4)
+    blink(led, 0.2, 0.5)
     
 
 def sos(led):
@@ -45,36 +46,33 @@ def sos(led):
         blink_fast(led) # S three short blinks
     sleep(0.6)
 
-test_pattern = "heartbeat"  # Options: "blink_slow", "blink_fast", "heartbeat", "sos"
+choices = input("Choose LED pattern (blink slow, blink fast, heartbeat, sos): ").lower()
+PATTERNS = {
+    "blink slow": ("Slow Blink", blink_slow),
+    "blink fast": ("Fast Blink", blink_fast),
+    "heartbeat": ("Heartbeat", heartbeat),
+    "sos": ("SOS Signal", sos),
+}
 
 def main():
     led = LED(17)  # GPIO pin 17
     counter = 0
+    
+    name, pattern_func = PATTERNS.get(choices, (None, None))
+
+    if pattern_func is None:
+        print("Invalid choice... Exiting")
+        return
+    
     try:
         while counter <= 5:
             counter += 1
-            print(f"Executing pattern: {test_pattern}")
-
-            if test_pattern =="blink_slow":
-                blink_slow(led)
-
-            elif test_pattern =="blink_fast":
-                blink_fast(led)
-
-            elif test_pattern == "heartbeat":
-                heartbeat(led)
-            elif test_pattern == "sos":
-                print("Sending SOS Signal")
-                sos(led)
-            print(counter)
-
-            
+            print(f"Executing Pattern: {name} (Iteration {counter})")
+            pattern_func(led)
 
     except KeyboardInterrupt:
         print("Program Termination")
         led.off()
-
-
 
 if __name__ == "__main__":
     main()
